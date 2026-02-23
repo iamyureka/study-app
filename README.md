@@ -1,6 +1,6 @@
-# 🎓 Study App
+# Study App
 
-**Study App** is a flexible learning platform designed to empower students. Unlike traditional schools limited by fixed curriculums, Study App allows students to take control of their education.
+**Study App** is a flexible learning platform designed to empower students. Unlike traditional schools limited by fixed curriculums, Study App allows students to take control of their education. Think of it like a personalized "Ruang Guru" or "Udemy", but with a strong focus on individual tutors, live classes, and 1-on-1 sessions!
 
 **Our Mission:**
 
@@ -9,10 +9,34 @@
 * **Flexible Learning:** Students decide when, where, and how they learn—whether with a tutor or through self-paced study.
 * **Stand Out:** We aim to make every student confident enough to stand up in front of their class and shine.
 
-and don't be fucked with anything
 ---
 
-## 🚀 How to Contribute
+## App Architecture & Current Components
+
+This project is built using a clean, feature-driven architecture. Currently, it is a **work-in-progress**, and we have the foundation built along with several core screens.
+
+### Key Folders
+The source code lives inside the `lib/` folder, structured as follows:
+
+*   **`core/`**: The heart of the app's look and feel.
+    *   `constants/`: App colors, sizes, and text strings.
+    *   `theme/`: Light and Dark mode styles.
+    *   **Currently Implemented `widgets/`**: Reusable UI components. Check here before building new ones!
+        *   **Buttons:** `primary_button.dart`, `outline_button.dart`
+        *   **Inputs:** `search_input.dart`, `text_input.dart`
+        *   **Common:** `avatar_widget.dart`, `empty_state.dart`, `loading_widget.dart`
+*   **`features/`**: The screens of the app, grouped by what they do. Here's what has been built so far:
+    *   `auth/`: Splash Screen, Onboarding, Login, Register, & Role Selection.
+    *   `student/`: Student Dashboard, Course Detail, & Live Class screen.
+    *   `teacher/`: Teacher Dashboard.
+    *   `chat/`: Chat Detail screen (messaging UI).
+    *   `subscription/`: Subscription Plans, Payment, & Payment Success screens.
+*   **`models/`**: The data blueprints.
+*   **`routes/`**: How the app navigates from one screen to another.
+
+---
+
+## How to Contribute
 
 Welcome to the team! If this is your first time using GitHub or Flutter, don't worry. Follow these steps exactly, and you'll be coding in no time.
 
@@ -30,7 +54,7 @@ Welcome to the team! If this is your first time using GitHub or Flutter, don't w
 * Run the command below (replace `YOUR-USERNAME` with your actual GitHub username):
 
 ```bash
-# ⚠️ IMPORTANT: Clone YOUR fork, not the original hiyokun-d repo!
+# IMPORTANT: Clone YOUR fork, not the original hiyokun-d repo!
 git clone https://github.com/YOUR-USERNAME/study-app.git
 
 ```
@@ -57,7 +81,6 @@ Before you start coding, let's make sure the app actually runs on your machine.
 
 ```bash
 flutter pub get
-
 ```
 
 **3. Run the App**
@@ -68,16 +91,19 @@ flutter pub get
 
 ```bash
 flutter run
-
 ```
 
 * *Tip:* If you just want to see it quickly without a heavy emulator, choose **Chrome** or **Edge** as your device.
+
+```bash
+flutter run -d chrome
+```
 
 ---
 
 ### **Phase 3: Making Changes (The Workflow)**
 
-**⚠️ NEVER work directly on the `main` branch!**
+**NEVER work directly on the `main` branch!**
 Always create a "branch" for your specific task. Think of a branch as a "parallel universe" where you can make changes safely.
 
 **1. Create a New Branch**
@@ -87,14 +113,12 @@ Always create a "branch" for your specific task. Think of a branch as a "paralle
 
 ```bash
 git checkout -b feature/login-screen
-
 ```
 
 * *Example:* If you are fixing a typo:
 
 ```bash
 git checkout -b fix/typo-on-home
-
 ```
 
 **2. Write Your Code**
@@ -108,23 +132,20 @@ git checkout -b fix/typo-on-home
 
 ```bash
 git add .
-
 ```
 
 * Next, commit them with a message explaining **what** you did:
 
 ```bash
 git commit -m "Added the login button and styled the input fields"
-
 ```
 
 **4. Upload Your Changes (Push)**
 
-* Now, send your "parallel universe" branch to your GitHub:
+* Now, send your branch to your GitHub:
 
 ```bash
-git push origin feature/login-screen
-
+git push -u origin feature/login-screen
 ```
 
 ---
@@ -145,10 +166,10 @@ You've pushed your code to *your* GitHub, but now you need to get it into the *m
 
 ---
 
-### **💡 Troubleshooting (Read this if you're stuck)**
+### **Troubleshooting (Read this if you're stuck)**
 
 * **"Flutter command not found":** You haven't installed Flutter or added it to your PATH. Ask the group chat!
 * **"Permission denied" when pushing:** You might be trying to push to the main repo instead of your fork. Check `git remote -v` to see where you are pushing.
 * **App is red/error screen:** You might have a syntax error. Check the "Debug Console" in VS Code for red text.
 
-**Happy Coding! 🚀**
+**Happy Coding!**
