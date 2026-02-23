@@ -42,8 +42,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         return;
       }
       setState(() => _isLoading = true);
-      // Simulate registration
       Future.delayed(const Duration(seconds: 1), () {
+        if (!mounted) return;
         setState(() => _isLoading = false);
         Navigator.of(context).pushReplacementNamed(
           _selectedRole == 'student' ? '/student-dashboard' : '/teacher-dashboard',
@@ -76,9 +76,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: colorScheme.onSurface,
                   ),
                 ),
-                
+
                 const SizedBox(height: AppSizes.md),
-                
+
                 // Header
                 Text(
                   'Create Account',
@@ -87,18 +87,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: colorScheme.onSurface,
                   ),
                 ),
-                
+
                 const SizedBox(height: AppSizes.sm),
-                
+
                 Text(
                   'Sign up to start your learning journey',
                   style: textTheme.bodyLarge?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
                 ),
-                
+
                 const SizedBox(height: AppSizes.xl),
-                
+
                 // Role Selection
                 Text(
                   'I am a',
@@ -107,9 +107,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: colorScheme.onSurface,
                   ),
                 ),
-                
+
                 const SizedBox(height: AppSizes.sm),
-                
+
                 Row(
                   children: [
                     Expanded(
@@ -129,9 +129,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: AppSizes.lg),
-                
+
                 // Name Input
                 TextInput(
                   controller: _nameController,
@@ -146,9 +146,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: AppSizes.md),
-                
+
                 // Email Input
                 TextInput(
                   controller: _emailController,
@@ -166,9 +166,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: AppSizes.md),
-                
+
                 // Password Input
                 TextInput(
                   controller: _passwordController,
@@ -192,9 +192,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: AppSizes.md),
-                
+
                 // Confirm Password Input
                 TextInput(
                   controller: _confirmPasswordController,
@@ -218,9 +218,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                
+
                 const SizedBox(height: AppSizes.md),
-                
+
                 // Terms Checkbox
                 Row(
                   children: [
@@ -274,18 +274,65 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: AppSizes.lg),
-                
+
                 // Register Button
                 PrimaryButton(
                   text: AppStrings.register,
                   onPressed: _register,
                   isLoading: _isLoading,
                 ),
-                
+
                 const SizedBox(height: AppSizes.xl),
-                
+
+                // Divider
+                Row(
+                  children: [
+                    Expanded(
+                      child: Divider(
+                        color: colorScheme.outlineVariant,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+                      child: Text(
+                        'Or continue with',
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Divider(
+                        color: colorScheme.outlineVariant,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: AppSizes.xl),
+
+                // Social Login Buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildSocialButton(
+                      icon: Icons.g_mobiledata,
+                      label: 'Google',
+                      onTap: () {},
+                    ),
+                    const SizedBox(width: AppSizes.md),
+                    _buildSocialButton(
+                      icon: Icons.apple,
+                      label: 'Apple',
+                      onTap: () {},
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: AppSizes.xxl),
+
                 // Login Link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -369,6 +416,46 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSocialButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
+          decoration: BoxDecoration(
+            border: Border.all(color: colorScheme.outline),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 24,
+                color: colorScheme.onSurface,
+              ),
+              const SizedBox(width: AppSizes.sm),
+              Text(
+                label,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
