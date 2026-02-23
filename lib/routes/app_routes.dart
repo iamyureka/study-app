@@ -3,7 +3,6 @@ import '../features/auth/screens/splash_screen.dart';
 import '../features/auth/screens/onboarding_screen.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/register_screen.dart';
-import '../features/auth/screens/role_selection_screen.dart';
 import '../features/student/screens/student_dashboard.dart';
 import '../features/student/screens/course_detail_screen.dart';
 import '../features/student/screens/live_class_screen.dart';
@@ -22,7 +21,6 @@ class AppRoutes {
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String register = '/register';
-  static const String roleSelection = '/role-selection';
   static const String studentDashboard = '/student-dashboard';
   static const String courseDetail = '/course-detail';
   static const String liveClass = '/live-class';
@@ -46,9 +44,6 @@ class AppRoutes {
 
       case register:
         return _buildRoute(const RegisterScreen(), settings);
-
-      case roleSelection:
-        return _buildRoute(const RoleSelectionScreen(), settings);
 
       case studentDashboard:
         return _buildRoute(const StudentDashboard(), settings);

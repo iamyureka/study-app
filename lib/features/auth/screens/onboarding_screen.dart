@@ -70,7 +70,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _navigateToNext() {
-    Navigator.of(context).pushReplacementNamed('/role-selection');
+    Navigator.of(context).pushReplacementNamed('/login');
   }
 
   @override
@@ -100,7 +100,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
             ),
-            
+
             // Page View
             Expanded(
               child: PageView.builder(
@@ -114,7 +114,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
               ),
             ),
-            
+
             // Page Indicators
             Padding(
               padding: const EdgeInsets.symmetric(vertical: AppSizes.lg),
@@ -136,7 +136,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 }),
               ),
             ),
-            
+
             // Action Buttons
             Padding(
               padding: const EdgeInsets.all(AppSizes.lg),
@@ -199,9 +199,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               color: Colors.white,
             ),
           ),
-          
+
           const SizedBox(height: AppSizes.xxl),
-          
+
           // Title
           Text(
             page.title,
@@ -211,9 +211,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: AppSizes.md),
-          
+
           // Subtitle
           Text(
             page.subtitle,
