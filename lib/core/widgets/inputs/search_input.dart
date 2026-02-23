@@ -40,12 +40,18 @@ class _SearchInputState extends State<SearchInput> {
   late TextEditingController _controller;
   bool _hasText = false;
 
+  late FocusNode _focusNode;
+  bool _isFocused = false;
+
   @override
   void initState() {
     super.initState();
     _controller = widget.controller ?? TextEditingController();
     _hasText = _controller.text.isNotEmpty;
     _controller.addListener(_onTextChanged);
+
+    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(_handleFocusChange);
   }
 
   @override
@@ -53,7 +59,18 @@ class _SearchInputState extends State<SearchInput> {
     if (widget.controller == null) {
       _controller.dispose();
     }
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
     super.dispose();
+  }
+
+  void _handleFocusChange() {
+    if (_isFocused != _focusNode.hasFocus) {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    }
   }
 
   void _onTextChanged() {
@@ -87,19 +104,20 @@ class _SearchInputState extends State<SearchInput> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    
-    final effectiveFillColor = widget.fillColor ?? 
+
+    final effectiveFillColor = widget.fillColor ??
         colorScheme.surfaceContainerHighest.withOpacity(0.5);
 
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
       height: _inputHeight,
       decoration: BoxDecoration(
         color: effectiveFillColor,
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: widget.showBorder
             ? Border.all(
-                color: colorScheme.outlineVariant,
-                width: 1,
+                color: _isFocused ? colorScheme.primary : colorScheme.outlineVariant,
+                width: _isFocused ? 2 : 1,
               )
             : null,
       ),
@@ -114,12 +132,12 @@ class _SearchInputState extends State<SearchInput> {
               color: colorScheme.onSurfaceVariant,
             ),
           ),
-          
+
           // Text Field
           Expanded(
             child: TextField(
               controller: _controller,
-              focusNode: widget.focusNode,
+              focusNode: _focusNode,
               autofocus: widget.autofocus,
               onChanged: widget.onChanged,
               onSubmitted: widget.onSubmitted,
@@ -134,6 +152,11 @@ class _SearchInputState extends State<SearchInput> {
                   color: colorScheme.onSurfaceVariant,
                 ),
                 border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                focusedErrorBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: AppSizes.sm,
                   vertical: AppSizes.sm,
@@ -142,7 +165,7 @@ class _SearchInputState extends State<SearchInput> {
               ),
             ),
           ),
-          
+
           // Clear Button
           if (_hasText)
             AnimatedOpacity(
@@ -159,31 +182,6 @@ class _SearchInputState extends State<SearchInput> {
                 constraints: const BoxConstraints(
                   minWidth: 40,
                   minHeight: 40,
-                ),
-              ),
-            ),
-          
-          // Filter Button
-          if (widget.showFilter)
-            Container(
-              margin: const EdgeInsets.only(right: AppSizes.xs),
-              child: IconButton(
-                icon: Icon(
-                  Icons.tune_rounded,
-                  size: _fontSize + 4,
-                  color: colorScheme.primary,
-                ),
-                onPressed: widget.onFilterTap,
-                padding: const EdgeInsets.all(AppSizes.sm),
-                constraints: const BoxConstraints(
-                  minWidth: 40,
-                  minHeight: 40,
-                ),
-                style: IconButton.styleFrom(
-                  backgroundColor: colorScheme.primaryContainer.withOpacity(0.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                  ),
                 ),
               ),
             ),

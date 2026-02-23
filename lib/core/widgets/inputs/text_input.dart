@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '../../constants/app_sizes.dart';
 
 /// Custom text input widget with validation and modern styling
-class TextInput extends StatelessWidget {
+class TextInput extends StatefulWidget {
   const TextInput({
     super.key,
     this.controller,
@@ -34,7 +34,7 @@ class TextInput extends StatelessWidget {
     this.borderColor,
     this.validator,
     this.size = InputSize.medium,
-    this.showBorder = true,
+    this.showBorder = false,
   });
 
   final TextEditingController? controller;
@@ -67,8 +67,39 @@ class TextInput extends StatelessWidget {
   final InputSize size;
   final bool showBorder;
 
+  @override
+  State<TextInput> createState() => _TextInputState();
+}
+
+class _TextInputState extends State<TextInput> {
+  late FocusNode _focusNode;
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode = widget.focusNode ?? FocusNode();
+    _focusNode.addListener(_handleFocusChange);
+  }
+
+  @override
+  void dispose() {
+    if (widget.focusNode == null) {
+      _focusNode.dispose();
+    }
+    super.dispose();
+  }
+
+  void _handleFocusChange() {
+    if (_isFocused != _focusNode.hasFocus) {
+      setState(() {
+        _isFocused = _focusNode.hasFocus;
+      });
+    }
+  }
+
   double get _inputHeight {
-    switch (size) {
+    switch (widget.size) {
       case InputSize.small:
         return AppSizes.inputHeightSm;
       case InputSize.medium:
@@ -77,7 +108,7 @@ class TextInput extends StatelessWidget {
   }
 
   double get _contentPadding {
-    switch (size) {
+    switch (widget.size) {
       case InputSize.small:
         return AppSizes.sm;
       case InputSize.medium:
@@ -85,146 +116,153 @@ class TextInput extends StatelessWidget {
     }
   }
 
-  double get _fontSize => size == InputSize.small ? 14 : 16;
+  double get _fontSize => widget.size == InputSize.small ? 14 : 16;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    
-    final effectiveFillColor = fillColor ?? colorScheme.surface;
-    final effectiveBorderColor = borderColor ?? colorScheme.outline;
+
+    final effectiveFillColor = widget.fillColor ?? colorScheme.surface;
+    final defaultBorderColor = widget.borderColor ?? colorScheme.outline;
+
+    // Determine the border color based on focus and error state
+    Color currentBorderColor;
+    if (widget.errorText != null) {
+      currentBorderColor = colorScheme.error;
+    } else if (_isFocused) {
+      currentBorderColor = colorScheme.primary;
+    } else {
+      currentBorderColor = defaultBorderColor;
+    }
+
+    // Determine border width
+    final borderWidth = _isFocused || widget.errorText != null ? 2.0 : 1.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (label != null) ...[
+        if (widget.label != null) ...[
           Text(
-            label!,
+            widget.label!,
             style: textTheme.titleSmall?.copyWith(
-              color: enabled 
+              color: widget.enabled
                   ? colorScheme.onSurface
                   : colorScheme.onSurface.withOpacity(0.5),
             ),
           ),
           const SizedBox(height: AppSizes.xs),
         ],
-        TextFormField(
-          controller: controller,
-          initialValue: initialValue,
-          focusNode: focusNode,
-          autofocus: autofocus,
-          obscureText: obscureText,
-          enabled: enabled,
-          readOnly: readOnly,
-          maxLines: obscureText ? 1 : maxLines,
-          minLines: minLines,
-          maxLength: maxLength,
-          keyboardType: keyboardType,
-          textInputAction: textInputAction,
-          textCapitalization: textCapitalization,
-          inputFormatters: inputFormatters,
-          onChanged: onChanged,
-          onFieldSubmitted: onSubmitted,
-          onTap: onTap,
-          validator: validator,
-          style: textTheme.bodyLarge?.copyWith(
-            fontSize: _fontSize,
-            color: enabled 
-                ? colorScheme.onSurface
-                : colorScheme.onSurface.withOpacity(0.5),
-          ),
-          decoration: InputDecoration(
-            hintText: hint,
-            errorText: errorText,
-            helperText: helperText,
-            filled: true,
-            fillColor: effectiveFillColor,
-            contentPadding: EdgeInsets.symmetric(
-              horizontal: _contentPadding,
-              vertical: _contentPadding,
-            ),
-            prefixIcon: prefixIcon != null
-                ? Icon(
-                    prefixIcon,
-                    size: _fontSize + 4,
-                    color: enabled 
-                        ? colorScheme.onSurfaceVariant
-                        : colorScheme.onSurface.withOpacity(0.38),
+
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          decoration: BoxDecoration(
+            color: widget.enabled ? effectiveFillColor : colorScheme.surfaceContainerHighest.withOpacity(0.5),
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            border: widget.showBorder
+                ? Border.all(
+                    color: widget.enabled ? currentBorderColor : colorScheme.onSurface.withOpacity(0.12),
+                    width: borderWidth,
                   )
                 : null,
-            suffixIcon: suffixIcon != null
-                ? IconButton(
+          ),
+          child: Row(
+            children: [
+              if (widget.prefixIcon != null)
+                Padding(
+                  padding: EdgeInsets.only(left: _contentPadding),
+                  child: Icon(
+                    widget.prefixIcon,
+                    size: _fontSize + 4,
+                    color: widget.enabled
+                        ? (_isFocused ? colorScheme.primary : colorScheme.onSurfaceVariant)
+                        : colorScheme.onSurface.withOpacity(0.38),
+                  ),
+                ),
+
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: _contentPadding,
+                    vertical: widget.maxLines > 1 ? _contentPadding : 0,
+                  ),
+                  child: TextFormField(
+                    controller: widget.controller,
+                    initialValue: widget.initialValue,
+                    focusNode: _focusNode,
+                    autofocus: widget.autofocus,
+                    obscureText: widget.obscureText,
+                    enabled: widget.enabled,
+                    readOnly: widget.readOnly,
+                    maxLines: widget.obscureText ? 1 : widget.maxLines,
+                    minLines: widget.minLines,
+                    maxLength: widget.maxLength,
+                    keyboardType: widget.keyboardType,
+                    textInputAction: widget.textInputAction,
+                    textCapitalization: widget.textCapitalization,
+                    inputFormatters: widget.inputFormatters,
+                    onChanged: widget.onChanged,
+                    onFieldSubmitted: widget.onSubmitted,
+                    onTap: widget.onTap,
+                    validator: widget.validator,
+                    style: textTheme.bodyLarge?.copyWith(
+                      fontSize: _fontSize,
+                      color: widget.enabled
+                          ? colorScheme.onSurface
+                          : colorScheme.onSurface.withOpacity(0.5),
+                    ),
+                    decoration: InputDecoration(
+                      hintText: widget.hint,
+                      isDense: true,
+                      border: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      focusedErrorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: widget.maxLines == 1 ? _contentPadding : 0,
+                      ),
+                      hintStyle: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant.withOpacity(0.6),
+                      ),
+                      counterText: '', // Remove built-in counter if present
+                    ),
+                  ),
+                ),
+              ),
+
+              if (widget.suffixIcon != null)
+                Padding(
+                  padding: EdgeInsets.only(right: _contentPadding / 2),
+                  child: IconButton(
                     icon: Icon(
-                      suffixIcon,
+                      widget.suffixIcon,
                       size: _fontSize + 4,
-                      color: enabled 
+                      color: widget.enabled
                           ? colorScheme.onSurfaceVariant
                           : colorScheme.onSurface.withOpacity(0.38),
                     ),
-                    onPressed: onSuffixIconPressed,
-                  )
-                : null,
-            border: showBorder
-                ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: effectiveBorderColor),
-                  )
-                : OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide.none,
+                    onPressed: widget.onSuffixIconPressed,
                   ),
-            enabledBorder: showBorder
-                ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(color: effectiveBorderColor),
-                  )
-                : OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide.none,
-                  ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              borderSide: BorderSide(
-                color: colorScheme.primary,
-                width: 2,
-              ),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              borderSide: BorderSide(color: colorScheme.error),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              borderSide: BorderSide(
-                color: colorScheme.error,
-                width: 2,
-              ),
-            ),
-            disabledBorder: showBorder
-                ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide(
-                      color: colorScheme.onSurface.withOpacity(0.12),
-                    ),
-                  )
-                : OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    borderSide: BorderSide.none,
-                  ),
-            hintStyle: textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurfaceVariant.withOpacity(0.6),
-            ),
-            errorStyle: textTheme.bodySmall?.copyWith(
-              color: colorScheme.error,
-            ),
-            helperStyle: textTheme.bodySmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
+                ),
+            ],
           ),
         ),
+
+        if (widget.errorText != null || widget.helperText != null) ...[
+          const SizedBox(height: AppSizes.xs),
+          Text(
+            widget.errorText ?? widget.helperText!,
+            style: textTheme.bodySmall?.copyWith(
+              color: widget.errorText != null
+                  ? colorScheme.error
+                  : colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
       ],
     );
   }

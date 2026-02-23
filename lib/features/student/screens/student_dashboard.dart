@@ -3,6 +3,8 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/widgets/inputs/search_input.dart';
 import '../../../core/widgets/common/avatar_widget.dart';
+import '../../../core/widgets/common/app_bottom_nav.dart';
+import '../../../core/widgets/common/app_card.dart';
 import '../../../data/dummy_data.dart';
 import '../../../models/course_model.dart';
 import '../../../models/teacher_model.dart';
@@ -22,8 +24,6 @@ class _StudentDashboardState extends State<StudentDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
@@ -40,61 +40,40 @@ class _StudentDashboardState extends State<StudentDashboard> {
   }
 
   Widget _buildBottomNav() {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.05),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            items: const [
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined),
-                activeIcon: Icon(Icons.home_rounded),
-                label: AppStrings.home,
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.explore_outlined),
-                activeIcon: Icon(Icons.explore_rounded),
-                label: AppStrings.explore,
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.play_circle_outline),
-                activeIcon: Icon(Icons.play_circle_rounded),
-                label: AppStrings.myLearning,
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.chat_bubble_outline),
-                activeIcon: Icon(Icons.chat_bubble_rounded),
-                label: AppStrings.messages,
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person_outline),
-                activeIcon: Icon(Icons.person_rounded),
-                label: AppStrings.profile,
-              ),
-            ],
-          ),
+    return AppBottomNav(
+      currentIndex: _currentIndex,
+      onTap: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      items: const [
+        AppBottomNavItem(
+          icon: Icons.home_outlined,
+          activeIcon: Icons.home_rounded,
+          label: AppStrings.home,
         ),
-      ),
+        AppBottomNavItem(
+          icon: Icons.explore_outlined,
+          activeIcon: Icons.explore_rounded,
+          label: AppStrings.explore,
+        ),
+        AppBottomNavItem(
+          icon: Icons.play_circle_outline,
+          activeIcon: Icons.play_circle_rounded,
+          label: AppStrings.myLearning,
+        ),
+        AppBottomNavItem(
+          icon: Icons.chat_bubble_outline,
+          activeIcon: Icons.chat_bubble_rounded,
+          label: AppStrings.messages,
+        ),
+        AppBottomNavItem(
+          icon: Icons.person_outline,
+          activeIcon: Icons.person_rounded,
+          label: AppStrings.profile,
+        ),
+      ],
     );
   }
 }
@@ -105,8 +84,6 @@ class _HomeTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
     return SafeArea(
       child: SingleChildScrollView(
         child: Column(
@@ -115,34 +92,55 @@ class _HomeTab extends StatelessWidget {
             // Header
             _buildHeader(context),
             const SizedBox(height: AppSizes.md),
-            
+
             // Search bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-              child: SearchInput(
-                hint: 'Search courses, teachers...',
-                showFilter: true,
-                onFilterTap: () {},
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SearchInput(
+                      hint: 'Search courses, teachers...',
+                      showBorder: false,
+                    ),
+                  ),
+                  const SizedBox(width: AppSizes.md),
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    ),
+                    child: IconButton(
+                      icon: Icon(
+                        Icons.tune_rounded,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      onPressed: () {},
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: AppSizes.lg),
-            
+
             // Continue Learning
             _buildContinueLearning(context),
             const SizedBox(height: AppSizes.lg),
-            
+
             // Live Now
             _buildLiveNow(context),
             const SizedBox(height: AppSizes.lg),
-            
+
             // Featured Teachers
             _buildFeaturedTeachers(context),
             const SizedBox(height: AppSizes.lg),
-            
+
             // Popular Courses
             _buildPopularCourses(context),
             const SizedBox(height: AppSizes.lg),
-            
+
             // Categories
             _buildCategories(context),
             const SizedBox(height: AppSizes.xl),
@@ -271,7 +269,7 @@ class _HomeTab extends StatelessWidget {
     return Container(
       width: 280,
       margin: const EdgeInsets.only(right: AppSizes.md),
-      child: Card(
+      child: AppCard(
         child: Padding(
           padding: const EdgeInsets.all(AppSizes.md),
           child: Column(
@@ -432,7 +430,7 @@ class _HomeTab extends StatelessWidget {
     return Container(
       width: 260,
       margin: const EdgeInsets.only(right: AppSizes.md),
-      child: Card(
+      child: AppCard(
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () {
@@ -597,7 +595,7 @@ class _HomeTab extends StatelessWidget {
     return Container(
       width: 140,
       margin: const EdgeInsets.only(right: AppSizes.md),
-      child: Card(
+      child: AppCard(
         child: Padding(
           padding: const EdgeInsets.all(AppSizes.sm),
           child: Column(
@@ -709,7 +707,7 @@ class _HomeTab extends StatelessWidget {
     return Container(
       width: 200,
       margin: const EdgeInsets.only(right: AppSizes.md),
-      child: Card(
+      child: AppCard(
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: () {
@@ -742,7 +740,7 @@ class _HomeTab extends StatelessWidget {
                   ),
                 ),
               ),
-              
+
               Padding(
                 padding: const EdgeInsets.all(AppSizes.sm),
                 child: Column(
@@ -808,7 +806,7 @@ class _HomeTab extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-    
+
     final categories = [
       {'icon': Icons.calculate_rounded, 'name': 'Math', 'count': 120},
       {'icon': Icons.science_rounded, 'name': 'Science', 'count': 85},
@@ -932,7 +930,7 @@ class _ExploreTab extends StatelessWidget {
               onFilterTap: () {},
             ),
             const SizedBox(height: AppSizes.xl),
-            
+
             // Categories
             Text(
               'Browse by Category',
@@ -944,7 +942,7 @@ class _ExploreTab extends StatelessWidget {
             const SizedBox(height: AppSizes.sm),
             _buildCategoriesGrid(context),
             const SizedBox(height: AppSizes.xl),
-            
+
             // All Courses
             Text(
               'All Courses',
@@ -969,7 +967,7 @@ class _ExploreTab extends StatelessWidget {
               },
             ),
             const SizedBox(height: AppSizes.xl),
-            
+
             // Top Teachers
             Text(
               'Top Teachers',
@@ -1015,7 +1013,7 @@ class _ExploreTab extends StatelessWidget {
           return Container(
             width: 100,
             margin: const EdgeInsets.only(right: AppSizes.sm),
-            child: Card(
+            child: AppCard(
               child: InkWell(
                 onTap: () {},
                 borderRadius: BorderRadius.circular(AppSizes.cardRadius),
@@ -1138,7 +1136,7 @@ class _ExploreTab extends StatelessWidget {
     return Container(
       width: 130,
       margin: const EdgeInsets.only(right: AppSizes.sm),
-      child: Card(
+      child: AppCard(
         child: Padding(
           padding: const EdgeInsets.all(AppSizes.sm),
           child: Column(
@@ -1200,7 +1198,7 @@ class _MyLearningTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSizes.md),
-            
+
             // Stats
             Row(
               children: [
@@ -1218,7 +1216,7 @@ class _MyLearningTab extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSizes.xl),
-            
+
             // Continue Learning
             Text(
               'Continue Learning',
@@ -1229,9 +1227,9 @@ class _MyLearningTab extends StatelessWidget {
             ),
             const SizedBox(height: AppSizes.sm),
             ...courses.take(3).map((course) => _buildProgressCourseCard(context, course)),
-            
+
             const SizedBox(height: AppSizes.xl),
-            
+
             // Completed Courses
             Text(
               'Completed Courses',
@@ -1535,7 +1533,7 @@ class _ProfileTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSizes.lg),
-            
+
             // Profile Header
             Center(
               child: Column(
@@ -1576,7 +1574,7 @@ class _ProfileTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: AppSizes.xl),
-            
+
             // Stats
             Row(
               children: [
@@ -1586,7 +1584,7 @@ class _ProfileTab extends StatelessWidget {
               ],
             ),
             const SizedBox(height: AppSizes.xl),
-            
+
             // Menu Items
             _buildMenuItem(context, Icons.person_outline, 'Edit Profile', () {}),
             _buildMenuItem(context, Icons.notifications_outlined, 'Notifications', () {}),

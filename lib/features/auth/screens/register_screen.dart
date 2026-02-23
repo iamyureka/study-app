@@ -3,6 +3,8 @@ import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/widgets/buttons/primary_button.dart';
 import '../../../core/widgets/inputs/text_input.dart';
+import '../../../core/widgets/inputs/app_checkbox.dart';
+import '../../../core/widgets/common/app_card.dart';
 
 /// Modern register screen with theme-aware styling
 class RegisterScreen extends StatefulWidget {
@@ -224,7 +226,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Terms Checkbox
                 Row(
                   children: [
-                    Checkbox(
+                    AppCheckbox(
                       value: _acceptTerms,
                       onChanged: (value) {
                         setState(() => _acceptTerms = value ?? false);
@@ -430,32 +432,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final colorScheme = theme.colorScheme;
 
     return Expanded(
-      child: InkWell(
+      child: AppCard(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
-          decoration: BoxDecoration(
-            border: Border.all(color: colorScheme.outline),
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 24,
-                color: colorScheme.onSurface,
+        animated: true,
+        color: Colors.transparent,
+        padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
+        border: Border.all(color: colorScheme.outline),
+        borderRadius: AppSizes.radiusMd,
+        boxShadow: const [],
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 24,
+              color: colorScheme.onSurface,
+            ),
+            const SizedBox(width: AppSizes.sm),
+            Text(
+              label,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w500,
               ),
-              const SizedBox(width: AppSizes.sm),
-              Text(
-                label,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

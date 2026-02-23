@@ -97,16 +97,25 @@ class _PrimaryButtonState extends State<PrimaryButton>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     final effectiveOnPressed = widget.isEnabled && !widget.isLoading
         ? widget.onPressed
         : null;
 
-    final backgroundColor = widget.backgroundColor ?? 
+    final backgroundColor = widget.backgroundColor ??
         (widget.isOutlined ? Colors.transparent : colorScheme.primary);
-    
-    final foregroundColor = widget.textColor ?? 
+
+    final foregroundColor = widget.textColor ??
         (widget.isOutlined ? colorScheme.primary : colorScheme.onPrimary);
+
+    final disabledBackgroundColor = colorScheme.onSurface.withOpacity(0.12);
+    final disabledForegroundColor = colorScheme.onSurface.withOpacity(0.38);
+
+    final currentBackgroundColor = widget.isEnabled ? backgroundColor : disabledBackgroundColor;
+    final currentForegroundColor = widget.isEnabled ? foregroundColor : disabledForegroundColor;
+    final currentBorderColor = widget.isEnabled
+        ? (widget.backgroundColor ?? colorScheme.primary)
+        : colorScheme.onSurface.withOpacity(0.12);
 
     return GestureDetector(
       onTapDown: (_) {
@@ -119,6 +128,7 @@ class _PrimaryButtonState extends State<PrimaryButton>
         if (effectiveOnPressed != null) {
           setState(() => _isPressed = false);
           _animationController.reverse();
+          effectiveOnPressed();
         }
       },
       onTapCancel: () {
@@ -127,46 +137,32 @@ class _PrimaryButtonState extends State<PrimaryButton>
           _animationController.reverse();
         }
       },
+      behavior: HitTestBehavior.opaque,
       child: ScaleTransition(
         scale: _scaleAnimation,
-        child: SizedBox(
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
           width: widget.width ?? double.infinity,
           height: widget.height ?? _buttonHeight,
-          child: widget.isOutlined
-              ? OutlinedButton(
-                  onPressed: effectiveOnPressed,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: foregroundColor,
-                    backgroundColor: backgroundColor,
-                    disabledForegroundColor: colorScheme.onSurface.withOpacity(0.38),
-                    side: BorderSide(
-                      color: widget.isEnabled 
-                          ? (widget.backgroundColor ?? colorScheme.primary)
-                          : colorScheme.onSurface.withOpacity(0.12),
-                      width: 1.5,
+          decoration: BoxDecoration(
+            color: widget.isOutlined ? Colors.transparent : currentBackgroundColor,
+            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+            border: widget.isOutlined
+                ? Border.all(color: currentBorderColor, width: 1.5)
+                : null,
+            boxShadow: (!widget.isOutlined && widget.isEnabled && !_isPressed)
+                ? [
+                    BoxShadow(
+                      color: colorScheme.shadow.withOpacity(0.1),
+                      offset: const Offset(0, 4),
+                      blurRadius: 8,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: _buildButtonContent(foregroundColor),
-                )
-              : ElevatedButton(
-                  onPressed: effectiveOnPressed,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: backgroundColor,
-                    foregroundColor: foregroundColor,
-                    disabledBackgroundColor: colorScheme.onSurface.withOpacity(0.12),
-                    disabledForegroundColor: colorScheme.onSurface.withOpacity(0.38),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    ),
-                    elevation: _isPressed ? 0 : 2,
-                    shadowColor: colorScheme.shadow,
-                  ),
-                  child: _buildButtonContent(foregroundColor),
-                ),
+                  ]
+                : null,
+          ),
+          child: Center(
+            child: _buildButtonContent(currentForegroundColor),
+          ),
         ),
       ),
     );
@@ -184,25 +180,24 @@ class _PrimaryButtonState extends State<PrimaryButton>
       );
     }
 
-    if (widget.icon == null) {
-      return Text(
-        widget.text,
-        style: TextStyle(
-          fontSize: _fontSize,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.2,
-        ),
-      );
-    }
-
-    final iconWidget = Icon(widget.icon, size: _iconSize);
     final textWidget = Text(
       widget.text,
       style: TextStyle(
         fontSize: _fontSize,
         fontWeight: FontWeight.w600,
+        color: foregroundColor,
         letterSpacing: 0.2,
       ),
+    );
+
+    if (widget.icon == null) {
+      return textWidget;
+    }
+
+    final iconWidget = Icon(
+      widget.icon,
+      size: _iconSize,
+      color: foregroundColor,
     );
 
     return Row(
